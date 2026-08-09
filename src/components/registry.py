@@ -1,0 +1,12 @@
+class ComponentRegistry:
+    def __init__(self):
+        self._components = {}
+
+    def register(self, name, component):
+        if name in self._components:
+            raise ValueError(f"Component already registered: {name}")
+
+        self._components[name] = component
+
+    def get(self, name):
+        return self._components[name]
