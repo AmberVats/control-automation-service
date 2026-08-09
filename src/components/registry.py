@@ -10,3 +10,6 @@ class ComponentRegistry:
 
     def get(self, name):
         return self._components[name]
+
+    def list_components(self):
+        return list(self._components.keys())
