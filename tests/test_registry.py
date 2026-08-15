@@ -3,7 +3,7 @@ import pytest
 from src.components.registry import ComponentRegistry
 from src.components.base import ControlComponent
 from src.components.reconciliation import two_way_match
-from src.components.tolerance import check_tolerance
+from src.components.tolerance import check_tolerance, ToleranceControl
 
 
 def test_registry_registers_and_retrieves_component():
@@ -76,3 +76,21 @@ def test_registry_registers_component_using_metadata():
     registry.register(component)
 
     assert registry.get("test.component") is component
+
+def test_registry_executes_registered_component():
+    registry = ComponentRegistry()
+
+    component = ToleranceControl()
+
+    registry.register(component)
+
+    result = registry.execute(
+        "tolerance.threshold_check",
+        {
+            "expected": 100,
+            "actual": 105,
+            "tolerance": 10,
+        },
+    )
+
+    assert result["status"] == "PASS"

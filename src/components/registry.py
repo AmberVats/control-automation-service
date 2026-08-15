@@ -44,3 +44,7 @@ class ComponentRegistry:
 
     def list_components(self):
         return list(self._components.keys())
+
+    def execute(self, name, data):
+        component = self.get(name)
+        return component.execute(data)
