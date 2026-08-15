@@ -17,4 +17,4 @@ parameters:
   primary_key: instrument_id
 notify:
   on_breach:
-    - static-data-team@hsbc.com
+    - static-data-team@globalmarkets.com

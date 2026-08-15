@@ -60,7 +60,7 @@ def test_render_html_report_direct():
 
     html = render_html_report(run_record, exceptions)
     assert "<!DOCTYPE html>" in html
-    assert "HSBC Product Control Analytics" in html
+    assert "Global Markets Product Control Analytics" in html
     assert "eod_position_break" in html
     assert "BREACH" in html
     assert "EQ_MSFT" in html

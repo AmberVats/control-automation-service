@@ -3,7 +3,7 @@ Option Explicit
 
 ' ==============================================================================
 ' Module: SheetFormatter.bas
-' Description: Styling routines for HSBC Product Control workbooks
+' Description: Styling routines for Global Markets Product Control workbooks
 ' ==============================================================================
 
 Public Sub FormatControlTable(ws As Worksheet, startRow As Long, rowCount As Long)
@@ -16,7 +16,7 @@ Public Sub FormatControlTable(ws As Worksheet, startRow As Long, rowCount As Lon
     With ws.Range(ws.Cells(startRow, 1), ws.Cells(startRow, 7))
         .Font.Bold = True
         .Font.Color = RGB(255, 255, 255)
-        .Interior.Color = RGB(219, 0, 17) ' HSBC Red
+        .Interior.Color = RGB(219, 0, 17) ' Crimson Red
         .HorizontalAlignment = xlCenter
     End With
     

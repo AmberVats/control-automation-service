@@ -1,5 +1,5 @@
 """
-HTML Exception and Control Run Report Generator for HSBC Product Control Analytics.
+HTML Exception and Control Run Report Generator for Global Markets Product Control Analytics.
 Produces standalone, corporate-formatted HTML reports for financial controls and breach investigations.
 """
 from datetime import datetime
@@ -229,7 +229,7 @@ def render_html_report(run_record: ControlRunModel, exceptions: List[ControlExce
     <div class="report-container">
         <div class="header-bar">
             <div>
-                <h1>HSBC Product Control Analytics</h1>
+                <h1>Global Markets Product Control Analytics</h1>
                 <div class="subtitle">Citizen Developer Framework — Automated Control Run Report</div>
             </div>
             <div class="header-badge">Control Automation Service v1.0</div>
@@ -303,7 +303,7 @@ def render_html_report(run_record: ControlRunModel, exceptions: List[ControlExce
         </div>
 
         <div class="footer">
-            Generated automatically by Control Automation Service | HSBC Product Control Analytics &copy; 2026
+            Generated automatically by Control Automation Service | Global Markets Product Control Analytics &copy; 2026
         </div>
     </div>
 </body>

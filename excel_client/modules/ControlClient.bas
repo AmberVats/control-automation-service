@@ -2,7 +2,7 @@ Attribute VB_Name = "ControlClient"
 Option Explicit
 
 ' ==============================================================================
-' HSBC Product Control Analytics - Control Automation Service Client
+' Global Markets Product Control Analytics - Control Automation Service Client
 ' Module: ControlClient.bas
 ' Description: REST API Client for executing financial controls and retrieving audit trails.
 ' ==============================================================================

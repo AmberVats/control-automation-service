@@ -22,4 +22,4 @@ parameters:
   allow_empty_string: false
 notify:
   on_breach:
-    - trade-ops-controls@hsbc.com
+    - trade-ops-controls@globalmarkets.com

@@ -150,7 +150,7 @@ tolerance:
 
 notify:
   on_breach:
-    - pc-analytics-alerts@hsbc.com
+    - pc-analytics-alerts@globalmarkets.com
 ```
 
 ---
@@ -245,7 +245,7 @@ The repository includes a ready-to-use Excel client interface (`excel_client/Con
 
 - `ControlClient.bas`: Handles asynchronous HTTP calls to `/api/v1/controls` and `/api/v1/runs`.
 - `JsonConverter.bas`: Native VBA parser for JSON arrays and nested dictionaries.
-- `SheetFormatter.bas`: Styles exception and history sheets in HSBC Product Control formatting.
+- `SheetFormatter.bas`: Styles exception and history sheets in Global Markets Product Control formatting.
 
 ---
 
@@ -317,4 +317,4 @@ tests/test_end_to_end.py ...                                             [100%]
 ---
 
 ## 📄 License
-MIT License. Developed for HSBC Product Control Analytics Data Engineering.
+MIT License. Developed for Global Markets Product Control Analytics Data Engineering.

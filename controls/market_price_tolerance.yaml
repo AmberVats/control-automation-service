@@ -12,4 +12,4 @@ parameters:
   tolerance: 1.00
 notify:
   on_breach:
-    - pc-valuation-alerts@hsbc.com
+    - pc-valuation-alerts@globalmarkets.com

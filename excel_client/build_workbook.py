@@ -1,5 +1,5 @@
 """
-Builds the pre-styled Excel client workbook for HSBC Product Control Analytics.
+Builds the pre-styled Excel client workbook for Global Markets Product Control Analytics.
 """
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -8,7 +8,7 @@ from openpyxl.utils import get_column_letter
 def create_control_runner_workbook(file_path="excel_client/ControlRunner.xlsx"):
     wb = Workbook()
 
-    # Define color schemes (HSBC Corporate Theme: Crimson/Charcoal/Silver)
+    # Define color schemes (Corporate Theme: Crimson/Charcoal/Silver)
     header_fill = PatternFill(start_color="DB0011", end_color="DB0011", fill_type="solid")
     dark_fill = PatternFill(start_color="2D3142", end_color="2D3142", fill_type="solid")
     card_fill = PatternFill(start_color="F4F5F6", end_color="F4F5F6", fill_type="solid")
@@ -36,7 +36,7 @@ def create_control_runner_workbook(file_path="excel_client/ControlRunner.xlsx"):
     ws_panel.views.sheetView[0].showGridLines = True
 
     # Title Banner
-    ws_panel["B2"] = "HSBC Product Control Analytics — Control Automation Service"
+    ws_panel["B2"] = "Global Markets Product Control Analytics — Control Automation Service"
     ws_panel["B2"].font = font_title
     ws_panel["B3"] = "Citizen Developer Framework — REST API Microservice Interface (v1.0)"
     ws_panel["B3"].font = font_subtitle

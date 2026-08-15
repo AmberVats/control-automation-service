@@ -29,4 +29,4 @@ tolerance:
     description: "Market value variance allowed up to $50 or 1bp"
 notify:
   on_breach:
-    - pc-analytics-alerts@hsbc.com
+    - pc-analytics-alerts@globalmarkets.com

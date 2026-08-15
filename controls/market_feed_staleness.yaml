@@ -15,4 +15,4 @@ parameters:
   max_age_days: 1.0
 notify:
   on_breach:
-    - market-data-ops@hsbc.com
+    - market-data-ops@globalmarkets.com
