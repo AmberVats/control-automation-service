@@ -1,23 +1,62 @@
-from src.components.tolerance import check_tolerance
+from src.components.base import ControlComponent
 
 
-def test_tolerance_passes_when_difference_is_within_limit():
-    result = check_tolerance(
-        expected=1000.00,
-        actual=1000.50,
-        tolerance=1.00
+def check_tolerance(expected, actual, tolerance):
+    """
+    Compare expected and actual values against an allowed tolerance.
+
+    Returns:
+        PASS if the absolute difference is within tolerance.
+        FAIL if the difference exceeds tolerance.
+    """
+
+    difference = abs(actual - expected)
+
+    if difference <= tolerance:
+        status = "PASS"
+    else:
+        status = "FAIL"
+
+    return {
+        "status": status,
+        "difference": difference
+    }
+
+
+class ToleranceControl(ControlComponent):
+    def __init__(self, version="1.0"):
+        super().__init__(
+            name="tolerance.threshold_check",
+            version=version,
+        )
+
+    def execute(self, data):
+        return check_tolerance(**data)
+
+def test_tolerance_control_executes_tolerance_check():
+    control = ToleranceControl()
+
+    result = control.execute(
+        {
+            "expected": 100,
+            "actual": 105,
+            "tolerance": 10,
+        }
     )
 
     assert result["status"] == "PASS"
-    assert result["difference"] == 0.50
+    assert result["difference"] == 5
 
+def test_tolerance_control_detects_breach():
+    control = ToleranceControl()
 
-def test_tolerance_fails_when_difference_exceeds_limit():
-    result = check_tolerance(
-        expected=1000.00,
-        actual=1002.00,
-        tolerance=1.00
+    result = control.execute(
+        {
+            "expected": 100,
+            "actual": 120,
+            "tolerance": 10,
+        }
     )
 
     assert result["status"] == "FAIL"
-    assert result["difference"] == 2.00
+    assert result["difference"] == 20

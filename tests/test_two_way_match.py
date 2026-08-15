@@ -1,4 +1,4 @@
-from src.components.reconciliation import two_way_match
+from src.components.reconciliation import two_way_match, TwoWayMatchControl
 
 
 def test_two_way_match_passes_when_values_match():
@@ -77,3 +77,10 @@ def test_two_way_match_detects_market_value_break():
 
     assert result["status"] == "BREACH"
     assert result["breach_count"] == 1
+
+
+def test_two_way_match_control_is_a_control_component():
+    control = TwoWayMatchControl()
+
+    assert control.name == "reconciliation.two_way_match"
+    assert control.version == "1.0"

@@ -1,3 +1,6 @@
+from src.components.base import ControlComponent
+
+
 def two_way_match(
     source,
     target,
@@ -123,3 +126,14 @@ def two_way_match(
         "breach_count": len(breaches),
         "breaches": breaches,
     }
+
+
+class TwoWayMatchControl(ControlComponent):
+    def __init__(self, version="1.0"):
+        super().__init__(
+            name="reconciliation.two_way_match",
+            version=version,
+        )
+
+    def execute(self, data):
+        return two_way_match(**data)
