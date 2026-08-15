@@ -138,3 +138,30 @@ def get_run_exceptions(
         offset=offset,
         exceptions=[ExceptionItem.model_validate(item) for item in items]
     )
+
+
+@router.get("/runs/{run_id}/report.html")
+def get_run_html_report(
+    run_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Generate and serve a standalone, styled executive HTML report for a control execution run.
+    """
+    from fastapi.responses import HTMLResponse
+    from src.report.html_report import render_html_report
+
+    run_record = db.query(ControlRunModel).filter(ControlRunModel.run_id == run_id).first()
+    if not run_record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Run '{run_id}' not found"
+        )
+
+    exceptions = db.query(ControlExceptionModel).filter(
+        ControlExceptionModel.run_id == run_id
+    ).order_by(ControlExceptionModel.id).all()
+
+    html = render_html_report(run_record, exceptions)
+    return HTMLResponse(content=html)
+
