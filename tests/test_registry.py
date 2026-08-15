@@ -1,6 +1,7 @@
 import pytest
 
 from src.components.registry import ComponentRegistry
+from src.components.base import ControlComponent
 from src.components.reconciliation import two_way_match
 from src.components.tolerance import check_tolerance
 
@@ -22,11 +23,13 @@ def test_registry_rejects_duplicate_component():
     with pytest.raises(ValueError):
         registry.register("test.component", object())
 
+
 def test_registry_raises_error_for_unknown_component():
     registry = ComponentRegistry()
 
     with pytest.raises(KeyError):
         registry.get("unknown.component")
+
 
 def test_registry_registers_two_way_match_component():
     registry = ComponentRegistry()
@@ -38,6 +41,7 @@ def test_registry_registers_two_way_match_component():
 
     assert registry.get("reconciliation.two_way_match") is two_way_match
 
+
 def test_registry_registers_tolerance_component():
     registry = ComponentRegistry()
 
@@ -47,6 +51,7 @@ def test_registry_registers_tolerance_component():
     )
 
     assert registry.get("tolerance.threshold_check") is check_tolerance
+
 
 def test_registry_lists_registered_components():
     registry = ComponentRegistry()
@@ -58,3 +63,16 @@ def test_registry_lists_registered_components():
         "reconciliation.two_way_match",
         "tolerance.threshold_check",
     ]
+
+
+def test_registry_registers_component_using_metadata():
+    registry = ComponentRegistry()
+
+    component = ControlComponent(
+        name="test.component",
+        version="1.0"
+    )
+
+    registry.register(component)
+
+    assert registry.get("test.component") is component
