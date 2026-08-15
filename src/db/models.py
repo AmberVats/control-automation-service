@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Column,
     String,
@@ -16,6 +16,10 @@ from sqlalchemy.orm import declarative_base, relationship
 Base = declarative_base()
 
 
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
 class ControlModel(Base):
     __tablename__ = "controls"
 
@@ -29,8 +33,8 @@ class ControlModel(Base):
     config_yaml = Column(Text, nullable=False)
     config_hash = Column(String(64), nullable=False)
     enabled = Column(Boolean, default=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now, nullable=False)
 
 
 class ControlRunModel(Base):
@@ -42,7 +46,7 @@ class ControlRunModel(Base):
     config_hash = Column(String(64), nullable=False, index=True)
     triggered_by = Column(String(50), default="api", nullable=False)
     as_of_date = Column(String(20), nullable=True)
-    start_time = Column(DateTime, default=datetime.utcnow, nullable=False)
+    start_time = Column(DateTime, default=utc_now, nullable=False)
     end_time = Column(DateTime, nullable=True)
     duration_ms = Column(Float, nullable=True)
     status = Column(String(20), nullable=False)  # PASS, BREACH, FAIL
@@ -50,7 +54,7 @@ class ControlRunModel(Base):
     row_count_out = Column(Integer, default=0)
     breach_count = Column(Integer, default=0)
     error_message = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
 
     exceptions = relationship(
         "ControlExceptionModel",
@@ -72,7 +76,7 @@ class ControlExceptionModel(Base):
     target_val = Column(Text, nullable=True)
     difference = Column(Float, nullable=True)
     message = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
 
     run = relationship("ControlRunModel", back_populates="exceptions")
 
