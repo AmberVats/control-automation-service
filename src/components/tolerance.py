@@ -1,6 +1,6 @@
 from src.components.base import ControlComponent
 
-def check_tolerance(expected, actual, tolerance):
+def check_tolerance(expected, actual, tolerance, **kwargs):
     """
     Compare expected and actual values against an allowed tolerance.
 

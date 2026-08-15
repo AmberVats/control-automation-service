@@ -2,7 +2,10 @@ import pytest
 
 from src.components.registry import ComponentRegistry
 from src.components.base import ControlComponent
-from src.components.reconciliation import two_way_match
+from src.components.reconciliation import (
+    two_way_match,
+    TwoWayMatchControl,
+)
 from src.components.tolerance import check_tolerance, ToleranceControl
 
 

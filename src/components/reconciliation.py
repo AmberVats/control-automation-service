@@ -6,8 +6,10 @@ def two_way_match(
     target,
     keys,
     compare,
-    tolerance,
+    tolerance=None,
+    **kwargs,
 ):
+    tolerance = tolerance or {}
     """
     Compare source and target records using configurable keys
     and field-level tolerances.
