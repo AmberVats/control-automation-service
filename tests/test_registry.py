@@ -94,3 +94,12 @@ def test_registry_executes_registered_component():
     )
 
     assert result["status"] == "PASS"
+
+def test_registry_execute_raises_error_for_unknown_component():
+    registry = ComponentRegistry()
+
+    with pytest.raises(KeyError):
+        registry.execute(
+            "unknown.component",
+            {}
+        )
