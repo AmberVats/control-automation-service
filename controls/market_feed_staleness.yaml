@@ -1,0 +1,18 @@
+# Market Price Feed Staleness Check
+name: market_feed_staleness
+version: 1
+component: quality.staleness
+description: Flag market prices or valuation inputs that have not been refreshed within the allowed 1-day threshold.
+owner: product_control_analytics
+schedule: "45 17 * * 1-5"
+enabled: true
+source:
+  type: query_file
+  query_file: queries/market_prices.sql
+parameters:
+  timestamp_field: price_date
+  as_of_date: "2026-08-15"
+  max_age_days: 1.0
+notify:
+  on_breach:
+    - market-data-ops@hsbc.com

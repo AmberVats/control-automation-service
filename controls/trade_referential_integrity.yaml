@@ -1,0 +1,20 @@
+# Trade Referential Integrity Control
+name: trade_referential_integrity
+version: 1
+component: quality.referential_integrity
+description: Verify that all traded instruments match valid active definitions in the master security table.
+owner: product_control_analytics
+schedule: "15 19 * * 1-5"
+enabled: true
+source:
+  type: query_file
+  query_file: queries/trades.sql
+lookup:
+  type: query_file
+  query_file: queries/instruments.sql
+parameters:
+  foreign_key: instrument_id
+  primary_key: instrument_id
+notify:
+  on_breach:
+    - static-data-team@hsbc.com

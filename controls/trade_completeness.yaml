@@ -1,0 +1,25 @@
+# Trade Feed Completeness Control
+name: trade_completeness
+version: 1
+component: quality.completeness
+description: Ensure all inbound trade bookings contain mandatory economic and organizational attributes.
+owner: product_control_analytics
+schedule: "0 19 * * 1-5"
+enabled: true
+source:
+  type: query_file
+  query_file: queries/trades.sql
+parameters:
+  required_fields:
+    - trade_id
+    - instrument_id
+    - book
+    - trader
+    - side
+    - quantity
+    - price
+    - settle_date
+  allow_empty_string: false
+notify:
+  on_breach:
+    - trade-ops-controls@hsbc.com

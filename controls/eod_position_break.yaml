@@ -1,0 +1,32 @@
+# EOD Position Break Control
+name: eod_position_break
+version: 2
+component: reconciliation.two_way_match
+description: End-of-Day position and market value reconciliation between Risk Management System and Core Books & Records.
+owner: product_control_analytics
+schedule: "0 18 * * 1-5"
+enabled: true
+source:
+  type: query_file
+  query_file: queries/risk_positions.sql
+target:
+  type: query_file
+  query_file: queries/books_positions.sql
+keys:
+  - as_of_date
+  - instrument_id
+  - book
+compare:
+  - quantity
+  - market_value
+tolerance:
+  quantity:
+    absolute: 0.0
+    description: "Quantity must roll forward with zero break"
+  market_value:
+    absolute: 50.0
+    relative: 0.0001
+    description: "Market value variance allowed up to $50 or 1bp"
+notify:
+  on_breach:
+    - pc-analytics-alerts@hsbc.com

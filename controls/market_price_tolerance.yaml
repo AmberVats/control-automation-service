@@ -1,0 +1,15 @@
+# Market Price Variance Tolerance Check
+name: market_price_tolerance
+version: 1
+component: tolerance.threshold_check
+description: Validate that price adjustments or daily market moves remain within allowed tolerance boundaries.
+owner: product_control_analytics
+schedule: "30 17 * * 1-5"
+enabled: true
+parameters:
+  expected: 145.50
+  actual: 146.10
+  tolerance: 1.00
+notify:
+  on_breach:
+    - pc-valuation-alerts@hsbc.com
