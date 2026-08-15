@@ -103,3 +103,53 @@ def test_registry_execute_raises_error_for_unknown_component():
             "unknown.component",
             {}
         )
+
+def test_registry_executes_two_way_match_component():
+    registry = ComponentRegistry()
+
+    component = TwoWayMatchControl()
+
+    registry.register(component)
+
+    result = registry.execute(
+        "reconciliation.two_way_match",
+        {
+            "source": [
+                {
+                    "as_of_date": "2026-08-09",
+                    "instrument_id": "AAPL",
+                    "book": "EQUITY_BOOK",
+                    "quantity": 100,
+                    "market_value": 20000,
+                }
+            ],
+            "target": [
+                {
+                    "as_of_date": "2026-08-09",
+                    "instrument_id": "AAPL",
+                    "book": "EQUITY_BOOK",
+                    "quantity": 100,
+                    "market_value": 20000,
+                }
+            ],
+            "keys": [
+                "as_of_date",
+                "instrument_id",
+                "book",
+            ],
+            "compare": [
+                "quantity",
+                "market_value",
+            ],
+            "tolerance": {
+                "quantity": {"absolute": 0},
+                "market_value": {
+                    "absolute": 50,
+                    "relative": 0.0001,
+                },
+            },
+        },
+    )
+
+    assert result["status"] == "PASS"
+    assert result["breach_count"] == 0
