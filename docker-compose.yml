@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: control-automation-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://pc_user:pc_password@postgres:5432/control_db
+      - ENVIRONMENT=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./controls:/app/controls
+      - ./queries:/app/queries
+      - ./data:/app/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: control-automation-postgres
+    environment:
+      - POSTGRES_USER=pc_user
+      - POSTGRES_PASSWORD=pc_password
+      - POSTGRES_DB=control_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./sql/02_views.sql:/docker-entrypoint-initdb.d/02_views.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pc_user -d control_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: control-automation-scheduler
+    command: ["python", "-m", "src.scheduler.cron"]
+    environment:
+      - DATABASE_URL=postgresql://pc_user:pc_password@postgres:5432/control_db
+      - POLL_INTERVAL_SECONDS=60
+    depends_on:
+      api:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./controls:/app/controls
+      - ./queries:/app/queries
+    restart: unless-stopped
+
+volumes:
+  pgdata:
