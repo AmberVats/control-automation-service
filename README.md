@@ -4,9 +4,26 @@
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0%2B-red.svg)
+![Tests](https://img.shields.io/badge/pytest-55%20passed-success.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-> **Enterprise financial control automation microservice** built for **Product Control Analytics**. Exposes declarative reconciliation, tolerance variance, and data quality routines as versioned REST endpoints within a **Citizen Developer framework**, backed by immutable SQL audit trails and an Excel/VBA client for business users.
+> **Enterprise financial control automation microservice** developed for **Product Control Analytics**. Exposes declarative reconciliation, tolerance variance, and data quality routines as versioned REST endpoints within a **Citizen Developer framework**, backed by immutable SQL audit trails, HTML executive reporting, and an Excel/VBA client for business users.
+
+---
+
+## 📚 Table of Contents
+- [🏛️ System Architecture](#️-system-architecture)
+- [🌟 Key Capabilities](#-key-capabilities)
+- [🧩 Reusable Component Catalogue](#-reusable-component-catalogue)
+- [📝 Declarative Control Specification (YAML)](#-declarative-control-specification-yaml)
+- [🚀 Local Machine Setup Guide (From Git)](#-local-machine-setup-guide-from-git)
+- [📡 REST API Reference](#-rest-api-reference)
+- [📊 Excel / VBA Client Integration](#-excel--vba-client-integration)
+- [📄 Executive HTML Reporting Engine](#-executive-html-reporting-engine)
+- [🗄️ SQL Audit Views & Relational Schema](#️-sql-audit-views--relational-schema)
+- [🐳 Docker Deployment](#-docker-deployment)
+- [🧪 Testing & CI/CD](#-testing--cicd)
+- [📖 Detailed Documentation](#-detailed-documentation)
 
 ---
 
@@ -15,9 +32,10 @@
 ```mermaid
 flowchart TD
     subgraph Clients["1. Business Clients & Triggers"]
-        VBA["Excel / VBA Client\n(ControlRunner.xlsm)"]
-        HTTP["Automated Triggers / CI-CD / Curl"]
+        VBA["Excel / VBA Client\n(ControlRunner.xlsx + .bas)"]
+        HTTP["Automated Triggers / CI-CD / API"]
         CRON["Background Cron Scheduler\n(src.scheduler.cron)"]
+        HTMLDoc["Documentation & Reports\n(docs/architecture_and_overview.html)"]
     end
 
     subgraph Service["2. FastAPI Control Microservice (/api/v1)"]
@@ -26,14 +44,15 @@ flowchart TD
         Registry["Component Registry\n(src.components.registry)"]
         Executor["Control Execution Engine\n(src.engine.executor)"]
         Audit["Audit & Exception Logger\n(src.engine.audit)"]
+        Reporter["HTML Reporting Engine\n(src.report.html_report)"]
     end
 
     subgraph Components["3. Reusable Control Component Suite"]
-        C1["reconciliation.two_way_match\n(Composite keys, abs/rel tolerances)"]
-        C2["tolerance.threshold_check\n(Variance and boundary limits)"]
-        C3["quality.completeness\n(Null, missing, and blank checks)"]
-        C4["quality.referential_integrity\n(Orphan foreign key validation)"]
-        C5["quality.staleness\n(Data freshness & timestamp age)"]
+        C1["reconciliation.two_way_match\n(Composite keys, tolerances)"]
+        C2["tolerance.threshold_check\n(Variance limits)"]
+        C3["quality.completeness\n(Null, missing, blank checks)"]
+        C4["quality.referential_integrity\n(Orphan foreign key checks)"]
+        C5["quality.staleness\n(Data freshness & timestamps)"]
     end
 
     subgraph Persistence["4. Relational Persistence & SQL Views"]
@@ -58,6 +77,7 @@ flowchart TD
     C5 --> Registry
 
     Executor --> Audit
+    Executor --> Reporter
     Audit --> DB
     DB --> T1
     DB --> T2
@@ -72,8 +92,9 @@ flowchart TD
 2. **Deterministic Versioning & Config Hashing**: Every control definition is hashed via **SHA-256**. Changes over quarters/years are auditable down to the exact configuration that produced a historical result.
 3. **Reusable Component Suite**: Plug-and-play components for 2-way reconciliations, threshold tests, data completeness, foreign-key integrity, and feed staleness.
 4. **Enterprise REST API**: Versioned FastAPI endpoints (`/api/v1/controls`, `/api/v1/runs`, `/api/v1/components`, `/metrics`).
-5. **VBA / Excel Integration**: Thin Excel `.xlsm` client using `MSXML2.ServerXMLHTTP` and JSON parsing. Business users interact with controls via a familiar spreadsheet interface while all business logic remains centralized, version-controlled, and audited server-side.
-6. **Immutable Audit Trail & SQL Views**: Every execution records input/output row counts, execution duration, status (`PASS`, `BREACH`, `FAIL`), and row-level breach records with SQL views (`v_control_run_history`, `v_control_summary`).
+5. **VBA / Excel Integration**: Thin Excel `.xlsx` client using `MSXML2.ServerXMLHTTP` and JSON parsing. Business users interact with controls via a familiar spreadsheet interface while all business logic remains centralized, version-controlled, and audited server-side.
+6. **Executive HTML Reporting**: Live `/api/v1/runs/{run_id}/report.html` endpoint and file generator with zero external dependencies.
+7. **Immutable Audit Trail & SQL Views**: Every execution records row counts, execution duration, status (`PASS`, `BREACH`, `FAIL`), and row-level breach records with SQL views (`v_control_run_history`, `v_control_summary`).
 
 ---
 
@@ -134,34 +155,54 @@ notify:
 
 ---
 
-## 🚀 Quickstart Guide (< 2 Minutes)
+## 🚀 Local Machine Setup Guide (From Git)
 
-### 1. Clone & Setup Virtual Environment
+Follow these step-by-step instructions to clone, set up, and run the service on your local machine.
+
+### Prerequisites
+- **Python 3.12+** installed
+- **Git** installed
+
+### Step 1: Clone the Repository
 ```bash
 git clone https://github.com/AmberVats/control-automation-service.git
 cd control-automation-service
+```
 
+### Step 2: Set Up Python Virtual Environment
+**On Windows (PowerShell):**
+```powershell
 python -m venv .venv
-# On Windows:
-.venv\Scripts\activate
-# On Linux/macOS:
-source .venv/bin/activate
+.\.venv\Scripts\Activate.ps1
+```
 
+**On macOS / Linux:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### Step 3: Install Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Seed Demo Financial Data
+### Step 4: Seed Demo Financial Database
+Populate the local SQLite database with realistic trades, positions, market prices, and intentional break anomalies:
 ```bash
 python -m data.seed_demo_data
 ```
 
-### 3. Run the Microservice
+### Step 5: Start the FastAPI Microservice
 ```bash
 uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-- Interactive Swagger API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
-- Component Catalogue: [http://localhost:8000/api/v1/components](http://localhost:8000/api/v1/components)
-- Health Check: [http://localhost:8000/health](http://localhost:8000/health)
+
+Once running, access:
+* **Interactive Swagger UI:** [http://localhost:8000/docs](http://localhost:8000/docs)
+* **Component Catalogue:** [http://localhost:8000/api/v1/components](http://localhost:8000/api/v1/components)
+* **Service Metrics:** [http://localhost:8000/metrics](http://localhost:8000/metrics)
+* **Health Check:** [http://localhost:8000/health](http://localhost:8000/health)
 
 ---
 
@@ -191,20 +232,29 @@ curl -X POST http://localhost:8000/api/v1/controls/eod_position_break/run \
 curl -X GET http://localhost:8000/api/v1/runs/{run_id}/exceptions?limit=50
 ```
 
-### 5. Service Observability Metrics
-```bash
-curl -X GET http://localhost:8000/metrics
+### 5. View Executive HTML Report
+```
+http://localhost:8000/api/v1/runs/{run_id}/report.html
 ```
 
 ---
 
-## 📊 Excel / VBA Client (`excel_client/`)
+## 📊 Excel / VBA Client Integration
 
 The repository includes a ready-to-use Excel client interface (`excel_client/ControlRunner.xlsx`) and exported `.bas` modules in `excel_client/modules/`:
 
 - `ControlClient.bas`: Handles asynchronous HTTP calls to `/api/v1/controls` and `/api/v1/runs`.
 - `JsonConverter.bas`: Native VBA parser for JSON arrays and nested dictionaries.
 - `SheetFormatter.bas`: Styles exception and history sheets in HSBC Product Control formatting.
+
+---
+
+## 📄 Executive HTML Reporting Engine
+
+The service generates corporate HTML exception reports with zero external dependencies:
+* **API Endpoint:** `GET /api/v1/runs/{run_id}/report.html`
+* **Static File Generator:** `src.report.html_report.generate_html_report_file`
+* **Sample Report:** [`reports/report_eod_position_break_2663112b.html`](file:///reports/report_eod_position_break_2663112b.html)
 
 ---
 
@@ -232,9 +282,9 @@ docker-compose up -d --build
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & CI/CD
 
-The test suite contains **53 comprehensive unit, integration, and end-to-end tests**:
+The test suite contains **55 automated unit, integration, and end-to-end tests** with 0 warnings:
 
 ```bash
 pytest -v
@@ -250,11 +300,19 @@ tests/test_quality.py .........                                          [ 45%]
 tests/test_registry.py ..........                                        [ 64%]
 tests/test_loader.py .....                                               [ 73%]
 tests/test_audit.py ..                                                   [ 77%]
-tests/test_api.py ....                                                   [ 84%]
-tests/test_scheduler.py .                                                [ 86%]
+tests/test_report.py ..                                                  [ 81%]
+tests/test_api.py ....                                                   [ 88%]
+tests/test_scheduler.py .                                                [ 90%]
 tests/test_end_to_end.py ...                                             [100%]
-======================= 53 passed in 1.17s =======================
+======================= 55 passed in 1.01s =======================
 ```
+
+---
+
+## 📖 Detailed Documentation
+
+* **[PROJECT_OVERVIEW_AND_BUILD_GUIDE.md](file:///PROJECT_OVERVIEW_AND_BUILD_GUIDE.md)**: Full business problem statement, architectural breakdown, phase-by-phase build journey, and interview guide.
+* **[docs/architecture_and_overview.html](file:///docs/architecture_and_overview.html)**: Interactive HTML architecture and documentation portal.
 
 ---
 
